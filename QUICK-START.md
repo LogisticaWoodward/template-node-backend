@@ -45,13 +45,27 @@ Actualizar en `package.json`:
 
 ### 3. **Configurar base de datos** (3 minutos)
 
+#### **🗺️ Opción A: SQL Server (Estándar Woodward)**
 ```bash
-# Si necesitas crear nuevas tablas
-npx prisma migrate dev --name init
+# 1. PRIMERO: Ejecutar script SQL manualmente en SSMS
+#    Archivo: database/sql-server-setup.sql
 
-# Si vas a usar las tablas existentes de Woodward
-# Solo ejecuta: npx prisma generate
+# 2. Una vez creadas las tablas:
+npx prisma generate
 ```
+
+#### **🍃 Opción B: MongoDB (NoSQL Woodward)**
+```bash
+# 1. Cambiar a esquema MongoDB
+cp prisma/schema-mongodb.prisma prisma/schema.prisma
+
+# 2. Actualizar .env con MONGO_DATABASE_URL
+
+# 3. Generar cliente
+npx prisma generate
+```
+
+⚠️ **IMPORTANTE**: En Woodward NO podemos crear tablas desde Prisma migrate
 
 ### 4. **Ejecutar en desarrollo** (1 minuto)
 

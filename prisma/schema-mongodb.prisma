@@ -1,0 +1,94 @@
+// This is your Prisma schema file for MongoDB,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGO_DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  username  String   @unique
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  jti       String   @unique
+  token     String
+  userId    String   @db.ObjectId
+  isRevoked Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  // Relación con Usuario
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+// Ejemplo de modelo adicional para MongoDB
+model Product {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  price       Float
+  stock       Int      @default(0)
+  category    String
+  isActive    Boolean  @default(true)
+  tags        String[] // Array nativo de MongoDB
+  metadata    Json?    // JSON flexible para MongoDB
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relación con usuario creador
+  createdBy String @db.ObjectId
+  creator   User   @relation(fields: [createdBy], references: [id])
+
+  @@map("products")
+}
+
+// Modelo que aprovecha las características de MongoDB
+model Order {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderNumber String @unique
+  status    String   @default("pending")
+  
+  // Embedding - datos del cliente directamente en el documento
+  customer  Json     // { name, email, address: { street, city, zip } }
+  
+  // Array de productos embebidos
+  items     Json[]   // [{ productId, name, price, quantity, subtotal }]
+  
+  // Totales
+  subtotal  Float
+  tax       Float
+  total     Float
+  
+  // Metadatos flexibles
+  metadata  Json?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relación con usuario que procesó la orden
+  processedBy String @db.ObjectId
+  processor   User   @relation(fields: [processedBy], references: [id])
+
+  @@map("orders")
+}

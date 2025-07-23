@@ -1,15 +1,37 @@
 # 🗄️ Estructura de Base de Datos - Woodward Backend Template
 
-## 📋 **Estructura Actual del Template**
+## 📑 **Opciones de Base de Datos**
 
-El template viene pre-configurado con una estructura básica de autenticación. Aquí está la documentación completa:
+El template soporta **dos opciones** principales según las necesidades de Woodward:
 
-### **🔧 Configuración Actual**
+### **🗺️ Opción A: SQL Server (Relacional)**
 
 ```env
 # Configuración SQL Server (Woodward estándar)
 DATABASE_URL="sqlserver://172.16.0.124:1433;database=PortToDoor;user={WoodwardSA};password={...};encrypt=true;trustServerCertificate=true"
 ```
+
+**Esquema:** `prisma/schema.prisma` (actual)
+
+### **🍃 Opción B: MongoDB (NoSQL)**
+
+```env
+# Configuración MongoDB (Woodward NoSQL)
+MONGO_DATABASE_URL="mongodb+srv://sa:u3SOPVZMG341ppjV@registrozero.wh1b5hi.mongodb.net/prometeo?retryWrites=true&w=majority&appName=registroZero"
+```
+
+**Esquema:** `prisma/schema-mongodb.prisma` (alternativo)
+
+### **⚠️ IMPORTANTE: Creación Manual de Tablas**
+
+En Woodward, **no podemos crear tablas** directamente desde Prisma. Por lo tanto:
+
+1. **Primero**: Ejecutar script SQL manualmente 
+2. **Después**: Usar Prisma para interactuar con las tablas
+
+📜 **Scripts disponibles:**
+- `database/sql-server-setup.sql` - Para SQL Server
+- **Instrucciones MongoDB** más abajo
 
 ---
 
@@ -194,6 +216,114 @@ model Warehouse { /* ... */ }
 model StockMovement { /* ... */ }
 model Supplier { /* ... */ }
 ```
+
+---
+
+## 🍃 **Opción MongoDB - Setup Completo**
+
+### **1. Cambiar a MongoDB**
+
+```bash
+# 1. Respaldar esquema actual
+cp prisma/schema.prisma prisma/schema-sqlserver.prisma
+
+# 2. Usar esquema MongoDB
+cp prisma/schema-mongodb.prisma prisma/schema.prisma
+
+# 3. Actualizar .env
+MONGO_DATABASE_URL="mongodb+srv://sa:u3SOPVZMG341ppjV@registrozero.wh1b5hi.mongodb.net/prometeo?retryWrites=true&w=majority&appName=registroZero"
+
+# 4. Generar cliente
+npx prisma generate
+```
+
+### **2. Esquema MongoDB (con ventajas NoSQL)**
+
+```prisma
+// Aprovechando características únicas de MongoDB
+model Order {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderNumber String @unique
+  
+  // Embedding - datos anidados directamente
+  customer  Json     // { name, email, address: {...} }
+  items     Json[]   // [{ productId, name, price, quantity }]
+  
+  // Arrays nativos
+  tags      String[]
+  
+  // JSON flexible
+  metadata  Json?
+  
+  createdAt DateTime @default(now())
+  
+  @@map("orders")
+}
+```
+
+### **3. Ventajas de MongoDB en el Template**
+
+✅ **Flexibilidad de esquema** - JSON dinámico  
+✅ **Arrays nativos** - Sin tablas relacionales complejas  
+✅ **Embedding** - Datos relacionados en un documento  
+✅ **Escalabilidad horizontal** - Para grandes volúmenes  
+✅ **Queries complejas** - Agregaciones poderosas  
+
+### **4. Cuando Usar MongoDB vs SQL Server**
+
+**Usar MongoDB cuando:**
+- Datos semi-estructurados o flexibles
+- Necesitas escalabilidad horizontal
+- Schemas que cambian frecuentemente
+- Agregaciones complejas
+- Almacenamiento de JSON/documentos
+
+**Usar SQL Server cuando:**
+- Relaciones estrictas entre entidades
+- Transacciones ACID críticas
+- Reportes relacionales complejos
+- Esquemas estables y bien definidos
+- Integración con sistemas legacy
+
+---
+
+## 📋 **Setup Manual de Tablas (IMPORTANTE)**
+
+### **SQL Server - Paso a Paso**
+
+```bash
+# 1. Ejecutar script SQL manualmente en SSMS o Azure Data Studio
+# Archivo: database/sql-server-setup.sql
+
+# 2. Una vez creadas las tablas, generar cliente Prisma
+npx prisma generate
+
+# 3. Verificar conexión
+npm run start:dev
+```
+
+### **MongoDB - Paso a Paso**
+
+```bash
+# 1. MongoDB es más flexible - las collections se crean automáticamente
+# 2. Solo necesitas cambiar el esquema y generar
+
+cp prisma/schema-mongodb.prisma prisma/schema.prisma
+npx prisma generate
+npm run start:dev
+```
+
+### **⚠️ Por qué No Usamos Prisma Migrate**
+
+En el servidor de Woodward:
+- **No tenemos permisos** para crear/alterar tablas
+- **DBA maneja** la estructura de base de datos
+- **Prisma solo lee** la estructura existente
+
+**Workflow recomendado:**
+1. Developer diseña esquema Prisma
+2. DBA ejecuta script SQL manualmente
+3. Developer usa `prisma generate` (no `migrate`)
 
 ---
 
