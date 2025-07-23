@@ -6,11 +6,11 @@
 
 #### Método A: GitHub Template (Recomendado)
 ```bash
-# 1. Ve a: https://github.com/woodward/backend-template
+# 1. Ve a: https://github.com/LogisticaWoodward/template-node-backend
 # 2. Click en "Use this template" → "Create a new repository"
 # 3. Nombra tu nuevo repo: "mi-nuevo-proyecto"
 # 4. Clona TU nuevo repo:
-git clone https://github.com/woodward/mi-nuevo-proyecto.git
+git clone https://github.com/LogisticaWoodward/mi-nuevo-proyecto.git
 cd mi-nuevo-proyecto
 
 # 5. Configurar automáticamente
@@ -20,7 +20,7 @@ npm run setup
 #### Método B: Clone manual (Si no usas GitHub)
 ```bash
 # Clonar el template
-git clone https://github.com/woodward/backend-template.git mi-nuevo-proyecto
+git clone https://github.com/LogisticaWoodward/template-node-backend.git mi-nuevo-proyecto
 cd mi-nuevo-proyecto
 
 # IMPORTANTE: Configurar automáticamente
