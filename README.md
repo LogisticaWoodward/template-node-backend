@@ -112,13 +112,21 @@ PORT=3000
 NODE_ENV=development
 ```
 
+## 📚 Documentación Adicional
+
+- **[DATABASE-STRUCTURE.md](./DATABASE-STRUCTURE.md)** - Estructura de BD completa y cómo adaptarla
+- **[EXAMPLES.md](./EXAMPLES.md)** - Ejemplos prácticos para extender el template  
+- **[QUICK-START.md](./QUICK-START.md)** - Guía rápida para developers
+- **[GITHUB-TEMPLATE-SETUP.md](./GITHUB-TEMPLATE-SETUP.md)** - Configurar como template
+
 ## Próximos Pasos
 
-1. Configurar la base de datos según tus necesidades
-2. Ajustar el esquema de Prisma
-3. Implementar módulos específicos del negocio
-4. Añadir tests
-5. Configurar CI/CD
+1. **Revisar** [DATABASE-STRUCTURE.md](./DATABASE-STRUCTURE.md) para entender la estructura
+2. **Seguir** [EXAMPLES.md](./EXAMPLES.md) para agregar nuevos módulos
+3. **Configurar** tu esquema de Prisma según tu proyecto
+4. **Implementar** módulos específicos del negocio
+5. **Añadir** tests
+6. **Configurar** CI/CD
 
 ## Contribución
 
