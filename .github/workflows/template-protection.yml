@@ -1,0 +1,31 @@
+# Protección automática del template repository
+name: Template Protection
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  protect-template:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Check if user is template maintainer
+      if: github.actor != 'tu-usuario-github'  # Cambia por tu usuario
+      run: |
+        echo "❌ ERROR: Solo el maintainer puede modificar este template"
+        echo "👤 Usuario actual: ${{ github.actor }}"
+        echo "✅ Usuario autorizado: tu-usuario-github"
+        echo ""
+        echo "🔧 Para crear un nuevo proyecto:"
+        echo "1. Usa 'Use this template' en GitHub"
+        echo "2. O clona y ejecuta: npm run setup"
+        exit 1
+        
+    - name: Template maintainer access
+      if: github.actor == 'tu-usuario-github'
+      run: |
+        echo "✅ Acceso autorizado para maintainer del template"
+        echo "🔧 Modificaciones al template permitidas"
